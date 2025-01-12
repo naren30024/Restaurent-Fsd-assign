@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 
 const CustomerLoginPage = () => {
   const [formData, setFormData] = useState({
-    Email: "",
-    password: "",
+   " Email": "",
+    "password": "",
   });
+  const navigate = useNavigate();
   const [error, setError] = useState("");
   const [userData, setUserData] = useState(null);
 
@@ -17,8 +19,8 @@ const CustomerLoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setUserData(null);
+    console.log(formData)
 
     try {
       // Sending data to Django backend
@@ -27,6 +29,7 @@ const CustomerLoginPage = () => {
       if (response.status === 200) {
         setUserData(response.data);
         alert("Login Successful!");
+        navigate('/Rest-Abc-1', { state: { user: userData } });
       }
     } catch (err) {
       console.error(err);
@@ -45,14 +48,14 @@ const CustomerLoginPage = () => {
             <div className="card-body">
               <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                  <label htmlFor="email" className="form-label">
+                  <label htmlFor="Email" className="form-label">
                     Email
                   </label>
                   <input
                     type="email"
                     className="form-control"
-                    id="email"
-                    name="email"
+                    id="Email"
+                    name="Email"
                     value={formData.Email}
                     onChange={handleChange}
                     placeholder="Enter your email"
@@ -79,15 +82,11 @@ const CustomerLoginPage = () => {
                     Login
                   </button>
                 </div>
-              </form>
-              {error && <div className="text-danger mt-3">{error}</div>}
-              {userData && (
-                <div className="mt-3">
-                  <h5>Welcome, {userData.name}!</h5>
-                  <p>Email: {userData.email}</p>
-                  <p>Address: {userData.address}</p>
+                <div>
+                  Don't have an account <a href="/">Register</a>
                 </div>
-              )}
+              </form>
+             
             </div>
           </div>
         </div>

@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import EditIcon from '@mui/icons-material/Edit';
+import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-const RestaurantMenuPage = ({ userType = 'Manager' }) => {
+
+const RestaurantMenuPage = () => {
   const [menuItems, setMenuItems] = useState([
     {
       id:1,
@@ -20,17 +23,23 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
     },
     // Add more initial menu items here if needed
   ]);
+  const navigate =useNavigate();
+  const location = useLocation();
+  const userData = location.state?.userType || 'default';
+  console.log(userData)
+  let userType = userData
   useEffect(() => {
     // Fetch data from Django backend
+    userType = userData
     axios
       .get("http://127.0.0.1:8000/Emitra-api/getmenuitem/")  // Adjust URL based on your Django API
       .then((response) => {
         // Update the products state with the data from the response
-        setProducts(response.data);
+        setMenuItems(response.data);
       })
       .catch((error) => {
         // Handle any errors during the fetch
-        setError("Failed to fetch products");
+        
         console.error("Error fetching data:", error);
       });
   }, []);
@@ -108,6 +117,9 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
           alert("check all fields");
         }
   };
+  const handleOrders = () =>{
+    navigate('/Rest-Abc-1/order')
+  }
 
   return (
     <>
@@ -156,7 +168,7 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
                   {"⭐".repeat(item.average_rating)}{" "}
                   {"☆".repeat(3 - item.average_rating)}
                 </div>
-                {userType === 'Manager' || userType === 'Owner' ? (
+                {userType === 'manager' || userType === 'owner' ? (
                   <div className='' style={{justifyContent:"center",alignItems:"center",marginTop:"1rem",marginRight:"1rem"}}>
                     <button className='btn btn-secondary' onClick={ () => {setShowEditMenuModal(true)}}>
                       <EditIcon/>
@@ -182,8 +194,8 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
                               <input
                               type="text"
                               className="form-control"
-                              name="image"
-                              value={newItem.image}
+                              name="image_url"
+                              value={newItem.image_url}
                               onChange={handleInputChange}
                               />
                             </div>
@@ -224,8 +236,8 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
                               <input
                               type="text"
                               className="form-control"
-                              name="type"
-                              value={newItem.type}
+                              name="item_type"
+                              value={newItem.item_type}
                               onChange={handleInputChange}
                               />
                             </div>
@@ -244,8 +256,8 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
                               <input
                               type="text"
                               className="form-control"
-                              name="prepTime"
-                              value={newItem.prepTime}
+                              name="preparation_time"
+                              value={newItem.preparation_time}
                               onChange={handleInputChange}
                               />
                             </div>
@@ -255,8 +267,8 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
                               type="number"
                               step="0.1"
                               className="form-control"
-                              name="rating"
-                              value={newItem.rating}
+                              name="average_rating"
+                              value={newItem.average_rating}
                               onChange={handleInputChange}
                               />
                             </div>
@@ -303,7 +315,7 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
       </div>
       <div className='row'>
         <div className='col-6'>
-        {userType === 'Manager' || userType === 'Owner' ? (
+        {userType === 'manager' || userType === 'owner' ? (
         <button
           className="btn btn-primary mt-3"
           onClick={() => setShowModal(true)}
@@ -313,7 +325,7 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
       ) : null}
         </div>
         <div className='col-6'>
-          <button className='btn btn-warning mt-3'>
+          <button className='btn btn-warning mt-3' onClick={handleOrders()}>
             Orders
           </button>
 
@@ -341,8 +353,8 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
                     <input
                       type="text"
                       className="form-control"
-                      name="image"
-                      value={newItem.image}
+                      name="image_url"
+                      value={newItem.image_url}
                       onChange={handleInputChange}
                     />
                   </div>
@@ -380,8 +392,8 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
                     <input
                       type="text"
                       className="form-control"
-                      name="type"
-                      value={newItem.type}
+                      name="item_type"
+                      value={newItem.item_type}
                       onChange={handleInputChange}
                     />
                   </div>
@@ -400,8 +412,8 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
                     <input
                       type="text"
                       className="form-control"
-                      name="prepTime"
-                      value={newItem.prepTime}
+                      name="preparation_time"
+                      value={newItem.preparation_time}
                       onChange={handleInputChange}
                     />
                   </div>
@@ -411,8 +423,8 @@ const RestaurantMenuPage = ({ userType = 'Manager' }) => {
                       type="number"
                       step="0.1"
                       className="form-control"
-                      name="rating"
-                      value={newItem.rating}
+                      name="average_rating"
+                      value={newItem.average_rating}
                       onChange={handleInputChange}
                     />
                   </div>

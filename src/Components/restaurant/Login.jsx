@@ -1,23 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+
 
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
-    userType: "",
-    email: "",
-    password: "",
-    restaurantCode: "",
+    "usertype": "",
+    "Email": "",
+    "password": "",
+    "restaurant_code": "",
   });
-
+   const navigate = useNavigate();
   const handleChange = (e) => {
-    // const { name, value, type, selectedOptions } = e.target;
-
-    // if (type === "select-multiple") {
-    //   const values = Array.from(selectedOptions, (option) => option.value);
-    //   setFormData((prevState) => ({ ...prevState, [name]: values }));
-    // } else {
-    //   setFormData((prevState) => ({ ...prevState, [name]: value }));
-    // }
+    
     setFormData((prevstate) => ({...prevstate, [e.target.name]:e.target.value}))
   };
 
@@ -37,7 +32,11 @@ const LoginPage = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log(data)
         alert(`Login successful`);
+
+        navigate('/Rest-Abc-12', { state: { userType: data[0].usertype } });
+
       } else {
         alert("Login failed: " + response.statusText);
       }
@@ -63,13 +62,14 @@ const LoginPage = () => {
                     Select User Type
                   </label>
                   <select
-                    id="userType"
-                    name="userType"
+                    id="usertype"
+                    name="usertype"
                     className="form-select"
                     
-                    value={formData.userType}
+                    value={formData.usertype}
                     onChange={handleChange}
                   >
+                     <option value="type">Select user Type</option>
                     <option value="Owner">Owner</option>
                     <option value="Manager">Manager</option>
                     <option value="Staff">Staff</option>
@@ -83,10 +83,10 @@ const LoginPage = () => {
                   </label>
                   <input
                     type="email"
-                    id="email"
-                    name="email"
+                    id="Email"
+                    name="Email"
                     className="form-control"
-                    value={formData.email}
+                    value={formData.Email}
                     onChange={handleChange}
                     required
                   />
@@ -116,9 +116,9 @@ const LoginPage = () => {
                   <input
                     type="text"
                     id="restaurantCode"
-                    name="restaurantCode"
+                    name="restaurant_code"
                     className="form-control"
-                    value={formData.restaurantCode}
+                    value={formData.restaurant_code}
                     onChange={handleChange}
                     required
                   />
@@ -130,6 +130,7 @@ const LoginPage = () => {
                     Login
                   </button>
                 </div>
+                
               </form>
             </div>
           </div>

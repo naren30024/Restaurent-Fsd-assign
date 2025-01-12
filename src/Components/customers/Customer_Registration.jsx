@@ -36,7 +36,7 @@ const CustmorRegistrationPage = () => {
         }
       } catch (err) {
         console.error(err);
-        setError("Enter all fields correctly.");
+        
       }
 
   };
@@ -73,8 +73,8 @@ const CustmorRegistrationPage = () => {
                   <input
                     type="email"
                     className="form-control"
-                    id="email"
-                    name="email"
+                    id="Email"
+                    name="Email"
                     value={formData.Email}
                     onChange={handleChange}
                     placeholder="Enter your email"
@@ -129,6 +129,9 @@ const CustmorRegistrationPage = () => {
                   <button type="submit" className="btn btn-primary">
                     Register
                   </button>
+                </div>
+                <div>
+                  already have account<a href="/Customer-Login">Login </a>
                 </div>
               </form>
             </div>

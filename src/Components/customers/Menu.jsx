@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
 const MenuPage = ({ userType }) => {
   const [menuItems, setMenuItems] = useState([
@@ -22,36 +23,54 @@ const MenuPage = ({ userType }) => {
     
     // Add more initial menu items here if needed
   ]);
+  const location = useLocation();
+  const userData = location.state?.user
   useEffect(() => {
     // Fetch data from Django backend
     axios
       .get("http://127.0.0.1:8000/Emitra-api/getmenuitem/")  // Adjust URL based on your Django API
       .then((response) => {
         // Update the products state with the data from the response
-        setProducts(response.data);
+        setMenuItems(response.data);
       })
       .catch((error) => {
         // Handle any errors during the fetch
-        setError("Failed to fetch products");
+        
         console.error("Error fetching data:", error);
       });
   }, []);
   const [cartItems, setCartItems] = useState([])
   const [showCartModal, setShowCartModal] = useState(false);
-
+  
+   const [detailsVisibility, setDetailsVisibility] = useState({});
+    const toggleDetails = (id) => {
+    setDetailsVisibility((prev) => ({ ...prev, [id]: !prev[id] }));
+    };
   const totalItems = cartItems.length;
   const totalPrice = Array.isArray(cartItems)
   ? cartItems.reduce((sum, item) => sum + (item.price || 0), 0)
   : 0;
 
-  const handlecartItems = (cart_item) =>{
+  const handlecartItems = () =>{
+    
     const Item = {
-      "menu_Item": cartitem.name,
-      "restaurant_code":cartitem.restaurant_code,
+      "menu_Item": cartItems[0].name,
+      "customer_name":userData.name,
+      "customer_number":userData.mobile,
+      "restaurant_code":cartItems[0].restaurant_code,
+      "state":'placed'
+   }
+   axios.post("http://127.0.0.1:8000/Emitra-api/postorders/",Item).
+   then((response) => {
+    console.log("Response:", response.data)
 
-
-    }
+   })
+   .catch((error) => {
+    console.error("Error:", error);
+    
+  });
   }
+  
  
 
   return (
@@ -102,7 +121,7 @@ const MenuPage = ({ userType }) => {
                   {"☆".repeat(3 - item.average_rating)}
                 </div>
                 <div className='' style={{justifyContent:"center",alignItems:"center",marginTop:"1rem",marginRight:"1rem"}}>
-                  <button className='btn btn-secondary' onClick={ () => { handlecartItems(item)}}>+</button>
+                  <button className='btn btn-secondary' onClick={ () =>{ setCartItems((prev) => [...prev, item] ) && console.log(cartItems)}}>+</button>
                 </div>
                
                
@@ -174,7 +193,7 @@ const MenuPage = ({ userType }) => {
                 <div className="modal-footer">
                   <button
                     className="btn btn-info"
-                    onClick={() => setShowCartModal(false)}
+                    onClick={() =>{   handlecartItems() && setShowCartModal(false)}}
                   >
                     Place Order
                   </button>
@@ -193,142 +212,7 @@ const MenuPage = ({ userType }) => {
        
       </div>
       ):null}
-      {userType === 'Manager' || userType === 'Owner' ? (
-        <button
-          className="btn btn-primary mt-3"
-          onClick={() => setShowModal(true)}
-        >
-          Add Menu Item
-        </button>
-      ) : null}
-
-      {showModal && (
-        <div className="modal show d-block" tabIndex="-1">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Add Menu Item</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setShowModal(false)}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <form>
-                  <div className="mb-3">
-                    <label className="form-label">Image URL</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="image"
-                      value={newItem.image}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Name</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="name"
-                      value={newItem.name}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Description</label>
-                    <textarea
-                      className="form-control"
-                      name="description"
-                      value={newItem.description}
-                      onChange={handleInputChange}
-                    ></textarea>
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Category</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="category"
-                      value={newItem.category}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Type</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="type"
-                      value={newItem.type}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Calories</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      name="calories"
-                      value={newItem.calories}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Preparation Time</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="prepTime"
-                      value={newItem.prepTime}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Average Rating</label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      className="form-control"
-                      name="rating"
-                      value={newItem.rating}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Price</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="price"
-                      value={newItem.price}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                </form>
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
-                  Close
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleAddMenuItem}
-                >
-                  Add Item
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      </div>
     </>
   );
 };

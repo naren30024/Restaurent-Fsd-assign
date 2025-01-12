@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 
 const OrdersPage = () => {
@@ -22,11 +23,11 @@ const OrdersPage = () => {
       .get("http://127.0.0.1:8000/Emitra-api/getorders/")  // Adjust URL based on your Django API
       .then((response) => {
         // Update the products state with the data from the response
-        setProducts(response.data);
+        setOrders(response.data);
       })
       .catch((error) => {
         // Handle any errors during the fetch
-        setError("Failed to fetch products");
+        
         console.error("Error fetching data:", error);
       });
   }, []);
